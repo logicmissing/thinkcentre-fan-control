@@ -126,17 +126,26 @@ docs/
   BIOS settings, EC RAM `0x00`–`0xFF` — plus `Test-ReconCommon.ps1`
   (55 passing tests over the shared logic). `scripts/recon/README.md` is
   the operator-facing procedure.
-- **Open questions:** does a physical EC answer on 0x62/0x66 there? Does
-  `LENOVO_GAMEZONE_DATA` exist on a 2017 board? What does that BIOS call
-  its cooling setting? Each is settled by a run, not by reasoning.
+- **Open questions:** the deciding one is now whether this board has a
+  Super I/O monitoring chip — the M70t had none, which is the only reason
+  its fan needed EC reverse-engineering at all. The operator reports
+  HWMonitor showing a real fan RPM there while LibreHardwareMonitor shows
+  none, which the M70t never did; see `docs/research/m710q-3111-notes.md`
+  for what that does and does not establish. Behind it: does a physical EC
+  answer on 0x62/0x66, does `LENOVO_GAMEZONE_DATA` exist on a 2017 board,
+  and what does that BIOS call its cooling setting. Each is settled by a
+  run, not by reasoning.
 - **Built, not yet verified:** every Windows-only path in those scripts.
   Only the pure logic and the failure branches have been run, on Linux.
 - **Watch out:** `EcReader` reads the M70t's offsets on *any* board — only
   writes are gated. RPM and EC temps shown on a 3111 today are unverified
   numbers, not readings. Per-core CPU temps are the exception.
-- **Next steps:** operator runs `scripts/recon/README.md` steps 1–7 and
-  returns `docs/research/recon-3111/`. Build nothing further — no EC-diff
-  harness, no per-board map — until those dumps exist.
+- **Next steps:** identify the chip above the fan readings in the tool
+  that shows them. A Super I/O chip name means the answer is FanControl and
+  this repo's EC route is unnecessary here; anything else means running
+  `scripts/recon/README.md` steps 1–7 and returning
+  `docs/research/recon-3111/`. Build nothing further — no EC-diff harness,
+  no per-board map — until that is settled.
 
 ## 4. How to look things up instead of guessing
 
