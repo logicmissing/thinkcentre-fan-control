@@ -53,26 +53,18 @@ anything works:**
 ## 2. How to navigate this repo
 
 ```
-CLAUDE.md                  <- this file
-README.md                  <- the public, user-facing page for the app
-LICENSE                    <- MIT (this project IS meant to be shared, unlike the template default)
-thinkcentre-fan-control.sln
+CLAUDE.md / README.md      <- this file; the public page for the app
+LICENSE                    <- MIT. This project IS meant to be shared, unlike the template default.
 .claude/
-  settings.json             <- permissions/config (committed); denies secret-file reads, denies force-push
-  settings.local.json       <- personal overrides (gitignored, never committed)
+  settings.json             <- permissions (committed); settings.local.json is personal + gitignored
   project.env               <- project-wide constants (PROJECT_TZ)
-  hooks/
-    session-start.sh         <- reports what this container can and cannot do (no .NET SDK)
-    dream-check.sh           <- reminds when a /dream pass is due; silent until the first one runs
-  commands/                 <- custom slash commands: /dream, /template-sync, /bootstrap-project
-  rules/                    <- always-loaded working conventions, one topic per file (see Section 5)
-  docs/
-    about-me.md              <- who the operator is and how they want to work
-    architecture.md          <- how this system is supposed to fit together (the six questions)
-    reviewed-tools.md        <- verdict log for external tools, inherited from the template
-    reference/               <- raw ground truth meant to be grepped (currently empty; see Section 4)
+  hooks/                    <- session-start.sh (what this container can/cannot do), dream-check.sh
+  commands/                 <- /dream, /template-sync, /bootstrap-project
+  rules/                    <- always-loaded conventions, one topic per file (Section 5)
+  docs/                     <- about-me, architecture (the six questions), reviewed-tools,
+                               reference/ (raw ground truth to grep; empty - see Section 4)
 src/
-  Tcfc.Core/                <- all hardware logic. net8.0-windows, no UI. The only project with tests.
+  Tcfc.Core/                <- all hardware logic. net8.0-windows, no UI. The only tested project.
   Tcfc.Cli/                 <- console probe: monitor, temps, mode. How findings get verified on metal.
   Tcfc.Tray/                <- the shipped app: tray icon + DashboardForm. WinForms.
   Tcfc.Capture/             <- dev-only. Renders the README demo GIF. No hardware, no elevation.
@@ -80,9 +72,8 @@ tests/Tcfc.Tests/           <- xunit. Pure functions only (decode, parse, mappin
 scripts/recon/              <- read-only PowerShell probes for mapping a NEW board; see its README
 docs/
   specs/                    <- the design spec, dated
-  research/                 <- ground truth: ACPI decompiles, EC probes, measured behavior
-    recon/                   <- raw captured ACPI tables and probe logs
-  screenshots/, icon.png    <- README assets
+  research/                 <- ground truth: ACPI decompiles, EC probes, measured behavior,
+                               per-board notes; recon/ holds the raw M70t captures
 .github/                    <- PR/issue templates, CONTRIBUTING, SECURITY, CODEOWNERS, dependabot
 .template-sync.yaml         <- links this project back to General-Template, see /template-sync
 ```
