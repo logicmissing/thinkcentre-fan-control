@@ -1,0 +1,16 @@
+# Code owners file.
+#
+# Each line is a file pattern followed by one or more owners.
+# The owner is auto-requested for review when a matching file changes.
+# Order matters: the last matching pattern wins.
+#
+# Syntax reference: https://docs.github.com/en/repository-configuration/configuring-code-owners
+#
+# Fill in the real owner(s) for this project below. Remove this comment block
+# once real rules are added.
+
+# Default owner for everything in the repo, unless a later rule overrides it.
+* @logicmissing
+
+# Example: a different owner for a specific directory.
+# /docs/ @docs-team

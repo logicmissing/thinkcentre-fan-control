@@ -1,0 +1,55 @@
+name: Bug report
+description: Report a defect in the current code.
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Fill in each field. Give one fact per field. Do not skip a required field.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: State the defect in one or two sentences.
+      placeholder: The export function writes an empty file.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: State what should happen instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: List the exact steps. Number each step.
+      placeholder: |
+        1. Open the file X.
+        2. Run command Y.
+        3. See the error.
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: State the OS, version, and any relevant tool versions.
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs or output
+      description: Paste any error text or log output. This field renders as code automatically.
+      render: shell
+    validations:
+      required: false

@@ -1,0 +1,42 @@
+# Tracks this project's relationship to the general-template scaffold it
+# was generated from. Used by /template-sync (.claude/commands/template-sync.md)
+# to check for and propose upstream improvements -- results are always
+# proposed for review, never auto-applied.
+
+source_repo: https://github.com/logicmissing/General-Template
+source_ref: d67355a674aaa6bed1039ef5569efbe1335c97a1
+last_synced: 2026-09-13
+
+# Paths kept in sync with the source template. Edit this list if this
+# project's needs diverge from the template's defaults -- it is
+# respected as-is, never silently expanded.
+synced_paths:
+  - .github/
+  - .claude/rules/
+  - .claude/commands/
+  - .claude/hooks/
+
+# Paths /template-sync must never touch, even if they overlap with an
+# entry above. These are project-specific by design -- see CLAUDE.md
+# Section 2 for why.
+never_sync:
+  - CLAUDE.md
+  - README.md
+  - .claude/docs/about-me.md
+  - .claude/docs/architecture.md
+  - .claude/skills/
+  # session-start.sh is designed to be REPLACED per project with that
+  # project's real setup -- it will always differ from the template
+  # version, and that's expected, not drift. This project's copy reports
+  # that the container cannot build or test a Windows-only .NET app.
+  - .claude/hooks/session-start.sh
+  # .github/dependabot.yml carries a real customisation here (a nuget
+  # block for this .NET solution), so upstream must not overwrite it.
+  - .github/dependabot.yml
+
+# Deliberately NOT taken from the template. /template-sync must not
+# propose re-adding these -- see CLAUDE.md Section 6 for the reasoning.
+declined:
+  - .claude/rules/excel-conventions.md
+  - .claude/rules/process-engineering-conventions.md
+  - .claude/skills/
