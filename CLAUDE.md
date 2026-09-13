@@ -77,6 +77,7 @@ src/
   Tcfc.Tray/                <- the shipped app: tray icon + DashboardForm. WinForms.
   Tcfc.Capture/             <- dev-only. Renders the README demo GIF. No hardware, no elevation.
 tests/Tcfc.Tests/           <- xunit. Pure functions only (decode, parse, mapping, guards).
+scripts/recon/              <- read-only PowerShell probes for mapping a NEW board; see its README
 docs/
   specs/                    <- the design spec, dated
   research/                 <- ground truth: ACPI decompiles, EC probes, measured behavior
@@ -109,17 +110,33 @@ docs/
   Full working is in `docs/research/ec-decode-m70t.md`. The README
   already tells users this honestly; keep it that way.
 
-### 3.2 Project scaffolding (this workstream)
+### 3.2 Project scaffolding
 
-- **Confirmed / working:** the project-management and coding scaffold from
-  `General-Template` is now in place — 11 rule files, three slash
-  commands, both session hooks, `.github/` community files, and this
-  file. Both hooks were run in this container and produce correct output.
-- **Open questions:** none.
-- **Built, not yet verified:** `/dream` and `/template-sync` have not been
-  exercised in this project yet.
-- **Next steps:** none required. Run `/template-sync` when the template
-  gains something worth pulling down.
+- **Confirmed / working:** the `General-Template` scaffold is in place —
+  11 rule files, three slash commands, both session hooks, `.github/`
+  files. Both hooks were run here and behave correctly.
+- **Built, not yet verified:** `/dream` and `/template-sync`, never run here.
+- **Next steps:** none. Run `/template-sync` when the template gains
+  something worth pulling down.
+
+### 3.3 Second board: ThinkCentre M710q (board `3111`)
+
+- **Confirmed / working:** nothing on that hardware yet. `scripts/recon/`
+  now holds three read-only probe scripts — ACPI tables, Lenovo WMI and
+  BIOS settings, EC RAM `0x00`–`0xFF` — plus `Test-ReconCommon.ps1`
+  (55 passing tests over the shared logic). `scripts/recon/README.md` is
+  the operator-facing procedure.
+- **Open questions:** does a physical EC answer on 0x62/0x66 there? Does
+  `LENOVO_GAMEZONE_DATA` exist on a 2017 board? What does that BIOS call
+  its cooling setting? Each is settled by a run, not by reasoning.
+- **Built, not yet verified:** every Windows-only path in those scripts.
+  Only the pure logic and the failure branches have been run, on Linux.
+- **Watch out:** `EcReader` reads the M70t's offsets on *any* board — only
+  writes are gated. RPM and EC temps shown on a 3111 today are unverified
+  numbers, not readings. Per-core CPU temps are the exception.
+- **Next steps:** operator runs `scripts/recon/README.md` steps 1–7 and
+  returns `docs/research/recon-3111/`. Build nothing further — no EC-diff
+  harness, no per-board map — until those dumps exist.
 
 ## 4. How to look things up instead of guessing
 
@@ -147,33 +164,24 @@ spec extract, a PawnIO reference) if a future task needs one.
 
 ## 5. Project conventions
 
-Working conventions live in `.claude/rules/` and load automatically —
-don't duplicate their content here. What's covered:
+Working conventions live in `.claude/rules/` and load automatically — don't
+duplicate their content here. One line each, read the file for the rest:
 
-- `coding-conventions.md` — error handling, comment style, audience,
-  verification-first, and the rule that a runnable change is done only
-  once it has actually been run.
-- `versioning-and-archival.md` — timestamped filenames (in `PROJECT_TZ`,
-  not container time) and the archive-on-supersede rule. Applies to
-  generated docs and reports; the C# source is versioned by git, not by
-  filename.
-- `bug-class-checks.md` — name a recurring bug class and sweep for it
-  before delivery.
+- `coding-conventions.md` — the general ones, including "done means it ran".
+- `versioning-and-archival.md` — timestamps in `PROJECT_TZ`, archive on
+  supersede. Applies to generated docs; the C# source is versioned by git.
+- `bug-class-checks.md` — name a recurring bug class, sweep before delivery.
 - `issue-logging.md` — how a confirmed bug gets recorded.
 - `session-export.md` — how a handoff between sessions gets recorded.
-- `working-with-me.md` — read `.claude/docs/about-me.md` once; scope and
-  analyze before changing code.
-- `architecture-doc-guide.md` — the six questions an architecture doc
-  answers. Already answered for this project in
-  `.claude/docs/architecture.md`.
-- `loop-engineering.md` — the L1/L2/L3 ladder for running agents
-  unattended around a repo.
-- `response-style.md` — flag uncertainty; be concise without cutting
-  what matters.
+- `working-with-me.md` — read `about-me.md` once; scope before changing code.
+- `architecture-doc-guide.md` — the six questions, already answered for this
+  project in `.claude/docs/architecture.md`.
+- `loop-engineering.md` — the L1/L2/L3 ladder for unattended agents.
+- `response-style.md` — flag uncertainty; be concise without cutting what
+  matters.
 - `reasoning-triggers.md` — words that ask for a specific reasoning mode.
-- `model-delegation.md` — plan with the primary model, delegate narrow
-  subtasks to a cheaper one; also records which slash commands work in
-  cloud sessions.
+- `model-delegation.md` — delegate narrow subtasks to a cheaper model; also
+  records which slash commands work in cloud sessions.
 
 ## 6. What did NOT make it into this repo
 
