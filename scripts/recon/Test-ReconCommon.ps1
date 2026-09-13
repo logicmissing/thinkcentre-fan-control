@@ -145,6 +145,28 @@ $withTimeouts = New-Object int[] 256
 $withTimeouts[0] = -1; $withTimeouts[1] = 0xA9
 Assert-Equal 0 (@(Get-EcWordCandidates -Bytes $withTimeouts | Where-Object { $_.Offset -eq 0 })).Count 'a timed-out byte never forms a candidate word'
 
+Write-Host "`nGet-EcRpmMatches"
+$known = New-Object int[] 256
+$known[0] = 0x03; $known[1] = 0xA9       # 937 big-endian, the reference board's idle tach
+$known[64] = 0xB0; $known[65] = 0x04     # 1200 little-endian, a decoy in the other byte order
+$exact = @(Get-EcRpmMatches -Bytes $known -TargetRpm 937 -Tolerance 0)
+Assert-Equal 1 $exact.Count 'an exact match is found with zero tolerance'
+Assert-Equal 0 $exact[0].Offset 'at the right offset'
+Assert-Equal 'big-endian' $exact[0].Order 'in the right byte order'
+
+$drifted = @(Get-EcRpmMatches -Bytes $known -TargetRpm 900 -Tolerance 75)
+Assert-Equal $true ($drifted.Count -ge 1) 'a reading that drifted still matches inside the tolerance'
+Assert-Equal 0 $drifted[0].Offset 'closest match is reported first'
+
+Assert-Equal 0 (@(Get-EcRpmMatches -Bytes $known -TargetRpm 4000 -Tolerance 10)).Count 'no match when nothing is near the target'
+
+$littleEndianOnly = @(Get-EcRpmMatches -Bytes $known -TargetRpm 1200 -Tolerance 0)
+Assert-Equal 'little-endian' $littleEndianOnly[0].Order 'little-endian words are searched too'
+
+$timedOut = New-Object int[] 256
+$timedOut[0] = -1; $timedOut[1] = 0xA9
+Assert-Equal 0 (@(Get-EcRpmMatches -Bytes $timedOut -TargetRpm 937 -Tolerance 200)).Count 'a timed-out byte never forms a match'
+
 Write-Host "`nGet-ReconErrorText"
 Assert-Equal 'one two three' (Get-ReconErrorText "one`ntwo`r`nthree") 'newlines collapse to single spaces'
 Assert-Equal 'a b' (Get-ReconErrorText "  a    b  ") 'runs of whitespace collapse and ends are trimmed'

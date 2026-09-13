@@ -22,6 +22,16 @@
     A word describing machine state during this run, used in the filename.
     Run once with "idle" and once with "load" to get two dumps you can compare.
 
+.PARAMETER KnownRpm
+    The fan RPM another tool shows right now, for example the value in CPUID
+    HWMonitor. Give it if you have it. The script then looks for that exact
+    value in EC RAM, which identifies the tachometer offset immediately
+    instead of by comparing an idle dump against a loaded one.
+
+.PARAMETER RpmTolerance
+    How far a match may be from -KnownRpm. Default 75 rpm, which allows for
+    the other tool sampling at a slightly different moment.
+
 .PARAMETER ModulePath
     Full path to LpcACPIEC.bin. Found automatically if it sits in the usual places.
 
@@ -30,10 +40,15 @@
 
 .EXAMPLE
     powershell -ExecutionPolicy Bypass -File .\03-dump-ec.ps1 -Label idle
+
+.EXAMPLE
+    powershell -ExecutionPolicy Bypass -File .\03-dump-ec.ps1 -Label idle -KnownRpm 1150
 #>
 [CmdletBinding()]
 param(
     [string]$Label = 'idle',
+    [int]$KnownRpm = 0,
+    [int]$RpmTolerance = 75,
     [string]$ModulePath,
     [string]$OutDir
 )
@@ -294,6 +309,32 @@ Write-Recon ('  bytes read {0}, timed out {1}, distinct values {2}' -f `
     $verdict.BytesRead, $verdict.BytesTimedOut, $verdict.DistinctValues)
 Write-Recon ''
 
+# The strongest signal first, when a reference reading was supplied.
+if ($KnownRpm -gt 0) {
+    $rpmMatches = @(Get-EcRpmMatches -Bytes $bytes -TargetRpm $KnownRpm -Tolerance $RpmTolerance)
+    Write-Recon ('### Offsets holding {0} rpm (+/- {1}), the value another tool reports' -f $KnownRpm, $RpmTolerance)
+    if ($rpmMatches.Count -eq 0) {
+        Write-Recon 'No EC word holds that value.'
+        Write-Recon 'This does not close the question. Try these, in order:'
+        Write-Recon '  1. Run again with a larger -RpmTolerance, for example 200.'
+        Write-Recon '  2. Check that the other tool still shows about that RPM right now.'
+        Write-Recon '  3. The tachometer may not be a plain rpm value. It can be encoded,'
+        Write-Recon '     for example as a count of clock pulses per revolution.'
+    }
+    else {
+        Write-Recon 'The closest match is the first line. It is the best tachometer candidate.'
+        Write-Recon ''
+        foreach ($rpmMatch in $rpmMatches) {
+            Write-Recon ('  offset 0x{0:X2}  {1,-13} {2} rpm  (off by {3})' -f `
+                $rpmMatch.Offset, $rpmMatch.Order, $rpmMatch.Value, $rpmMatch.Difference)
+        }
+        Write-Recon ''
+        Write-Recon 'Confirm it before trusting it: run again under load with the new RPM'
+        Write-Recon 'from the same tool. The same offset must hold the new value.'
+    }
+    Write-Recon ''
+}
+
 $candidates = @(Get-EcWordCandidates -Bytes $bytes)
 Write-Recon ('### 16-bit values in a plausible fan range ({0} found)' -f $candidates.Count)
 Write-Recon 'On the reference board the real tachometer was offset 0x00, big-endian.'
@@ -304,6 +345,7 @@ foreach ($candidate in $candidates) {
 }
 Write-Recon ''
 Write-Recon 'Next:'
+Write-Recon '  0. If another tool shows a fan RPM, run this again with -KnownRpm <value>.'
 Write-Recon '  1. Run this script again with -Label load while the CPU is busy.'
 Write-Recon '  2. Compare the two dumps. A real tachometer rises a lot under load.'
 Write-Recon '  3. A byte that rises a little is probably a temperature, not the fan.'

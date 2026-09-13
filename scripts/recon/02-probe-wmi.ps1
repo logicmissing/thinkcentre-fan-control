@@ -276,8 +276,34 @@ Write-Recon 'If that exact name is absent above, the Full Speed feature needs a 
 Write-Recon 'setting name on this board, or it does not exist here.'
 Write-Recon ''
 
-# --- [6] Write classes: presence only ---------------------------------------
-Write-Recon '### [6] Write interfaces (checked for presence, never called)'
+# --- [6] ACPI fan devices ----------------------------------------------------
+# PNP0C0B is the ACPI fan device. Windows enumerated five of them on the
+# reference M70t, but they all routed through its stubbed embedded controller
+# and reported nothing. If this board enumerates them AND something can read a
+# real RPM, the ACPI fan objects are worth investigating: _FST reports fan
+# status including the tachometer, and _FIF says whether the firmware accepts
+# fine-grain 0-100% levels.
+Write-Recon '### [6] ACPI fan devices (PNP0C0B)'
+try {
+    $fanDevices = @(Get-CimInstance -ClassName Win32_PnPEntity -ErrorAction Stop |
+        Where-Object { [string]$_.PNPDeviceID -like '*PNP0C0B*' })
+    if ($fanDevices.Count -eq 0) {
+        Write-Recon 'None enumerated. This board exposes no ACPI fan devices to Windows.'
+    }
+    else {
+        Write-Recon ('{0} ACPI fan device(s):' -f $fanDevices.Count)
+        foreach ($fanDevice in $fanDevices) {
+            Write-Recon ('  {0}  status={1}  id={2}' -f $fanDevice.Name, $fanDevice.Status, $fanDevice.PNPDeviceID)
+        }
+    }
+}
+catch {
+    Write-Recon ('FAILED: {0}' -f (Get-ReconErrorText $_.Exception.Message))
+}
+Write-Recon ''
+
+# --- [7] Write classes: presence only ---------------------------------------
+Write-Recon '### [7] Write interfaces (checked for presence, never called)'
 foreach ($className in @('Lenovo_SetBiosSetting', 'Lenovo_SaveBiosSettings', 'Lenovo_BiosPasswordSettings')) {
     $present = $false
     try {

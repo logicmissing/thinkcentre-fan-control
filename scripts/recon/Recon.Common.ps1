@@ -203,6 +203,48 @@ function Get-EcVerdict {
     }
 }
 
+# When another tool already shows a real fan RPM, that number is a key. Read it
+# at the moment of the dump, pass it here, and any EC word holding the same
+# value is almost certainly the tachometer. This is a much stronger signal than
+# the plausible-range shortlist below, and the reference project never had it -
+# on the M70t nothing could read the fan, so its offsets had to be found the
+# long way, by diffing idle against load.
+#
+# Tolerance exists because the other tool sampled at a slightly different
+# instant and a fan speed drifts. Default +/-75 rpm is roughly one sample of
+# drift on a desktop fan; widen it if nothing matches.
+function Get-EcRpmMatches {
+    param(
+        [Parameter(Mandatory = $true)][int[]]$Bytes,
+        [Parameter(Mandatory = $true)][int]$TargetRpm,
+        [int]$Tolerance = 75
+    )
+
+    $found = New-Object System.Collections.Generic.List[object]
+    for ($i = 0; $i -lt ($Bytes.Length - 1); $i++) {
+        if ($Bytes[$i] -lt 0 -or $Bytes[$i + 1] -lt 0) { continue }
+
+        $words = @(
+            [pscustomobject]@{ Order = 'big-endian';    Value = (($Bytes[$i] -shl 8) -bor $Bytes[$i + 1]) },
+            [pscustomobject]@{ Order = 'little-endian'; Value = (($Bytes[$i + 1] -shl 8) -bor $Bytes[$i]) }
+        )
+        foreach ($word in $words) {
+            $difference = [Math]::Abs($word.Value - $TargetRpm)
+            if ($difference -le $Tolerance) {
+                $found.Add([pscustomobject]@{
+                    Offset     = $i
+                    Order      = $word.Order
+                    Value      = $word.Value
+                    Difference = $difference
+                }) | Out-Null
+            }
+        }
+    }
+    # Closest first, so the best candidate is the first line a reader sees.
+    # Returned unrolled on purpose; wrap the call in @( ).
+    return ($found.ToArray() | Sort-Object Difference)
+}
+
 # Finds every 16-bit word in the dump whose value falls in a plausible desktop
 # fan range. On the reference board the tachometer turned out to be 0x00:0x01
 # read big-endian. This does not prove anything on its own - a temperature
