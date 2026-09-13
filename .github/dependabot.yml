@@ -1,0 +1,21 @@
+# Dependabot configuration.
+# Reference: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+#
+# Two entries are active here: GitHub Actions workflow updates, and NuGet
+# packages for the .NET solution at the repo root.
+
+version: 2
+updates:
+  # Keep GitHub Actions versions current.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  # Keep NuGet package versions current across every project in
+  # thinkcentre-fan-control.sln. "/" is correct here: Dependabot finds
+  # the solution and each .csproj from the repo root.
+  - package-ecosystem: "nuget"
+    directory: "/"
+    schedule:
+      interval: "weekly"

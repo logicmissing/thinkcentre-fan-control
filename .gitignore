@@ -1,3 +1,17 @@
+# Personal Claude Code overrides - never shared
+.claude/settings.local.json
+
+# Secrets - mirrors the deny-read list in .claude/settings.json, so the
+# two stay in agreement.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials.json
+secrets.yml
+secrets.yaml
+
 # .NET build output
 bin/
 obj/

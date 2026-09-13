@@ -1,0 +1,42 @@
+name: Feature request
+description: Propose a new feature or a change to existing behavior.
+title: "[Feature]: "
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Fill in each field. Give one fact per field.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: State the problem this feature solves. Do not describe the solution here.
+      placeholder: There is no way to export the report as a CSV file.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: State the feature you want. Be specific.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: List any other options you considered and why you rejected them.
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add any other information, screenshots, or links.
+    validations:
+      required: false
