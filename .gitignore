@@ -32,6 +32,10 @@ publish/
 tools/
 work/
 
+# The PawnIO EC module, if copied next to the recon scripts to run them.
+# Third-party signed binary, shipped in the release ZIP - not our source.
+scripts/recon/LpcACPIEC.bin
+
 # OS cruft
 Thumbs.db
 desktop.ini
