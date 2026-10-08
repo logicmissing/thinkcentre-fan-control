@@ -36,6 +36,13 @@ work/
 # Third-party signed binary, shipped in the release ZIP - not our source.
 scripts/recon/LpcACPIEC.bin
 
+# Personal operator profile - kept on the owner's machine only.
+.claude/docs/about-me.md
+
+# Raw recon dumps (BIOS settings, ACPI tables) can hold asset tags or
+# serial numbers. Review a file, then add it with `git add -f`.
+docs/research/recon-3111/
+
 # OS cruft
 Thumbs.db
 desktop.ini

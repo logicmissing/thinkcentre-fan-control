@@ -16,9 +16,9 @@ These actions are not allowed:
 
 ## Reporting
 
-Email the maintainer at pangisaac9889@gmail.com — the same address used
-for security reports in `.github/SECURITY.md`. The maintainer's GitHub
-handle is listed in `CODEOWNERS`. State what happened, when it happened,
+Contact the maintainer privately through the contact method in
+`.github/SECURITY.md`. The maintainer's GitHub handle is listed in
+`CODEOWNERS`. State what happened, when it happened,
 and who was involved. Reports are handled in confidence.
 
 ## Enforcement
