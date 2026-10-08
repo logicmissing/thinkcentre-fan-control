@@ -18,8 +18,9 @@ Report the problem in private instead. Use one of these methods:
 
 1. Use GitHub's private vulnerability reporting. Go to the **Security** tab
    of this repository, then select **Report a vulnerability**.
-2. If that option is not available, email the maintainer directly at
-   pangisaac9889@gmail.com.
+2. If that option is not available, open a public issue that asks for a
+   private contact. Do not put any details of the problem in that issue.
+   The maintainer, @logicmissing, will reply with a private way to send them.
 
 Include this information in your report:
 
